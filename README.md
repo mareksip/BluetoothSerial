@@ -9,6 +9,7 @@ Android and Windows Phone use Classic Bluetooth.  iOS uses Bluetooth Low Energy.
 * Android
 * iOS with [RedBearLab](http://redbearlab.com) BLE hardware, [Adafruit Bluefruit LE](http://www.adafruit.com/products/1697), [Laird BL600](http://www.lairdtech.com/Products/Embedded-Wireless-Solutions/Bluetooth-Radio-Modules/BL600-Series/#.VBI7AS5dUzI), or [BlueGiga](https://bluegiga.zendesk.com/entries/29185293--BGScript-spp-over-ble-AT-command-SPP-implementation-for-BLE)
 * Windows Phone 8
+* Windows Universal Platform (Windows 8, Windows 8.1, Windows 10): (methods implemented so far: connect, disconnect, list)
 * Browser (Testing only. See [comments](https://github.com/don/BluetoothSerial/blob/master/src/browser/bluetoothSerial.js).)
 
 [Supporting other Bluetooth Low Energy hardware](#supporting-other-ble-hardware)
@@ -78,7 +79,6 @@ For iOS, `connect` takes the UUID of the remote device.  Optionally, you can pas
 
 #### Windows Phone
 For Windows Phone, `connect` takes a MAC address of the remote device. The MAC address can optionally surrounded with parenthesis. e.g. `(AA:BB:CC:DD:EE:FF)`
-
 
 ### Parameters
 
