@@ -32,11 +32,9 @@
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.BLUETOOTH" />
             <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-<<<<<<< HEAD
             <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>  
-=======
+            <!-- Android 6.0 API level 23 permission -->
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
->>>>>>> refs/remotes/don/master
         </config-file>
 
     </platform>
