@@ -12,11 +12,11 @@
     <repo>https://github.com/don/BluetoothSerial.git</repo>
     <issue>https://github.com/don/BluetoothSerial/issues</issue>
 
+    <platform name="android">
+
     <js-module src="www/bluetoothSerial.js" name="bluetoothSerial">
         <clobbers target="window.bluetoothSerial" />
     </js-module>
-
-    <platform name="android">
 
         <config-file target="res/xml/config.xml" parent="/widget">
             <feature name="BluetoothSerial">
@@ -40,6 +40,10 @@
     </platform>
 
     <platform name="ios">
+    
+    <js-module src="www/bluetoothSerial.js" name="bluetoothSerial">
+        <clobbers target="window.bluetoothSerial" />
+    </js-module>
 
         <config-file target="config.xml" parent="/widget">
             <feature name="BluetoothSerial">

@@ -4,13 +4,14 @@ var streams = Windows.Storage.Streams;
 var deviceInfo = Windows.Devices.Enumeration.DeviceInformation;
 
 var cordova = require('cordova');
-module.exports = {
 
-  connService: null,
-  connSocket: null,
-  connWriter: null,
-  connReader: null,
-  connDevice: null,
+var connService;
+var connSocket;
+var connWriter;
+var connReader;
+var connDevice;
+
+module.exports = {
 
   list: function (successCallback, errorCallback) {
 
@@ -27,7 +28,10 @@ module.exports = {
             for (var i = 0; i < devices.length; i++) {
               parsedDevices.push({
                 id: devices[i].id,
-                name: devices[i].name
+                name: devices[i].id
+                /*temporarily replaced by id untill Microsoft solves problem with incorrect names
+                http://stackoverflow.com/questions/42734859/deviceinformation-findallasync-deviceinformation-returns-incorrect-name-property
+                */
               })
             }
             successCallback(parsedDevices);
@@ -41,8 +45,6 @@ module.exports = {
             message: error.message
           });
         });
-
-
       } catch (ex) {
         errorCallback(ex);
       }
@@ -60,27 +62,32 @@ module.exports = {
 
             connService = service;
 
-            connService.getSdpRawAttributesAsync(Windows.Devices.Bluetooth.BluetoothCacheMode.uncached).then(
-              function (attributes) {
-                connSocket = new sockets.StreamSocket();
-                connSocket.connectAsync(
-                  connService.connectionHostName,
-                  connService.connectionServiceName,
-                  sockets.SocketProtectionLevel.plainSocket).then(function () {
-                    connWriter = new streams.DataWriter(connSocket.outputStream);
-                    connReader = new streams.DataReader(connSocket.inputStream);
-                    successCallback(true);
-                  }, function (error) {
-                    errorCallback("Failed to connect to device, with error: " + error);
-                  });
-              },
-              function (error) {
-                errorCallback("Failed to retrieve SDP attributes, with error: " + error);
-              });
-
+            if (connSocket) {
+              successCallback(true);
+            }
+            else {
+              connService.getSdpRawAttributesAsync().then(
+                function (attributes) {
+                  connSocket = new sockets.StreamSocket();
+                  setTimeout(function () {
+                    connSocket.connectAsync(
+                      connService.connectionHostName,
+                      connService.connectionServiceName).then(function () {
+                        connWriter = new streams.DataWriter(connSocket.outputStream);
+                        connReader = new streams.DataReader(connSocket.inputStream);
+                        successCallback(true);
+                      }, function (error) {
+                        errorCallback("Failed to connect to device, with error: " + error);
+                      });
+                  }, 100);
+                },
+                function (error) {
+                  errorCallback("Failed to retrieve SDP attributes, with error: " + error);
+                });
+            }
             /*
                         return connService;
-
+ 
                     }, function (error) {
                         errorCallback("Failed to connect to device, with error: " + error);
                     }).then(function () {
@@ -91,13 +98,14 @@ module.exports = {
                             sockets.SocketProtectionLevel.plainSocket);
                     }).then(function () {
                         connWriter = new streams.DataWriter(connSocket.outputStream);
-
+ 
                         connReader = new streams.DataReader(connSocket.inputStream);
                         successCallback(true);
                     });
                  */
 
           })
+
       } catch (ex) {
         errorCallback(ex)
       }
@@ -165,7 +173,6 @@ module.exports = {
         if (connWriter) {
           connWriter.detachStream();
           connWriter = null;
-
         }
         if (connService) {
           connService.close();
@@ -175,8 +182,23 @@ module.exports = {
           connSocket.close();
           connSocket = null;
         }
+        successCallback(true);
       } catch (ex) {
-
+        errorCallback(ex);
+      }
+    }, 0);
+  },
+  isConnected: function (successCallback, errorCallback) {
+    setTimeout(function () {
+      try {
+        if (connWriter === null) {
+          //no device connected
+          successCallback(false);
+        } else {
+          errorCallback(true);
+        }
+      } catch (ex) {
+        errorCallback(false);
       }
 
     }, 0);
@@ -187,4 +209,4 @@ module.exports = {
 };
 
 require("cordova/exec/proxy").add("bluetoothSerial", module.exports);
-//module.exports = bluetoothSerial;
+    //module.exports = bluetoothSerial;
